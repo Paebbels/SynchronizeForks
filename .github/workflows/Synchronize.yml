@@ -1,0 +1,36 @@
+name: Pipeline
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  Synchronize:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - {name: "ghdl",    repository: "paebbels/ghdl",    upstream: "ghdl/ghdl",      branch: "master"}
+          - {name: "progit2", repository: "paebbels/progit2", upstream: "progit/progit2", branch: "main"  }
+    env:
+      GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
+    steps:
+      - name: ⏬ Checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ matrix.repository }}
+          ref: ${{ matrix.branch }}
+          path: ${{ matrix.name }}
+#          fetch-depth: 0
+          lfs: true
+      - name: Add upstream remote, where it was forked from
+        run: cd ${{ matrix.name }} && git remote add upstream https://github.com/${{ matrix.upstream }}.git
+      - name: Fetch changes from upstream including tags
+        run: cd ${{ matrix.name }} && git fetch --prune upstream #--tags
+      - name: Update local branches from upstream
+        run: cd ${{ matrix.name }} && git update-ref --create-reflog ${{ matrix.branch }} upstream/${{ matrix.branch }}
+      - name: Configure credentials for origin
+        run: cd ${{ matrix.name }} && git remote set-url --push origin https://Paebbels:$GITHUB_TOKEN@github.com/${{ matrix.repository }}
+      - name: Push branch '${{ matrix.branch }}' to repository
+        run: cd ${{ matrix.name }} && git push origin ${{ matrix.branch }}
+      
