@@ -1,0 +1,10 @@
+OSVVM/osvvm=OSVVM:main,dev
+OSVVM/osvvm=OSVVM-Libraries:main,dev
+OSVVM/osvvm=OSVVM-Scripts:main,dev
+OSVVM/osvvm=OSVVM-Common:main,dev
+OSVVM/osvvm=OSVVM-AXI4:main,dev
+OSVVM/osvvm=OSVVM-UART:main,dev
+OSVVM/osvvm=OSVVM-DPRAM:main,dev
+OSVVM/osvvm=OSVVM-CoSim:main,dev
+OSVVM/osvvm=OSVVM-Ethernet:main
+OSVVM/osvvm=OSVVM-Documentation:main

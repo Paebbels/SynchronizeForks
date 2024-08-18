@@ -1,0 +1,44 @@
+name: Synchronize forked repositories
+
+on:
+  push:
+  schedule:
+# Every day at 06:21 - rerun pipeline to check for updates on forked repositories
+    - cron: '21 6 * * *'
+
+jobs:
+  Synchronize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⏬ Checkout
+        uses: actions/checkout@v4
+
+      - name: ☑ Check GitHub API
+        run: |
+          echo "which gh=$(which gh)"
+          echo "gh --version: $(gh --version)"
+          gh help
+
+      - name: 🔄 Synchronize Repositories
+        run: |
+          echo "See: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork"
+          export GH_TOKEN=${{ secrets.GH_TOKEN }}
+          
+          while IFS=$'\r\n' read -r organisation; do
+            echo "${organisation}"
+          
+            while IFS=$'\r\n' read -r line; do
+              parent=${line%=*}
+              fork=${line#*=}
+              repo=${fork%:*}
+              branches=${fork#*:}
+              branches=(${branches//,/ })
+          
+              echo "  ${parent} => ${repo}"
+              for branch in "${branches[@]}"; do
+                echo "    gh repo sync Paebbels/${repo} -b ${branch}"
+                gh repo sync Paebbels/${repo} -b ${branch} || true
+              done
+            done < <(cat "${organisation}.repos")
+          done < <(cat "_ALL.repos")
