@@ -16,17 +16,21 @@ jobs:
 
       - name: ☑ Check GitHub API
         run: |
-          echo "which gh=$(which gh)"
-          echo "gh --version: $(gh --version)"
+          printf "which gh=%s\n"      "$(which gh)"
+          printf "gh --version: %s\n" "$(gh --version)"
           gh help
 
       - name: 🔄 Synchronize Repositories
         run: |
-          echo "See: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork"
+          set +e
+          
+          printf "See: %s\n" "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork"
           export GH_TOKEN=${{ secrets.GH_TOKEN }}
           
+          targetOrganisation=Paebbels
+          
           while IFS=$'\r\n' read -r organisation; do
-            echo "${organisation}"
+            printf "🏭 %s\n" "${organisation}"
           
             while IFS=$'\r\n' read -r line; do
               parent=${line%=*}
@@ -35,10 +39,17 @@ jobs:
               branches=${fork#*:}
               branches=(${branches//,/ })
           
-              echo "  ${parent} => ${repo}"
+              printf "  📂 %s ⇒ %s\n" "${parent}" "${repo}"
               for branch in "${branches[@]}"; do
-                echo "    gh repo sync Paebbels/${repo} -b ${branch}"
-                gh repo sync Paebbels/${repo} -b ${branch} || true
+                syncCommand="gh repo sync ${targetOrganisation}/${repo} -b ${branch}"
+                messages=$($syncCommand 2>&1)
+                if [[ $? -eq 0 ]]; then
+                  printf "    ✅ %s\n" "${syncCommand}"
+                else
+                  printf "    ❌ %s\n" "${syncCommand}"
+                  printf "%s\n" "$(sed 's/^/    ↪ /g' <<< "${messages}")"
+                  printf "::error title=%s::%s\n" "Synchronize ${targetOrganisation}/${repo}" "${messages}"
+                fi
               done
             done < <(cat "${organisation}.repos")
-          done < <(cat "_ALL.repos")
+          done < <(cat ".ALL.repos")
