@@ -12,4 +12,4 @@ OSVVM/UART=OSVVM-UART:main,dev
 OSVVM/Wishbone=OSVVM-Wishbone:main
 OSVVM/Documentation=OSVVM-Documentation:main
 OSVVM/SPI_GuyEschemann=OSVVM-SPI:main
-OSVVM/VideoBus_LouisAdriaens=OSVVM-VideoBus:master
+OSVVM/VideoBus_LouisAdriaens=OSVVM-VideoBus:main
