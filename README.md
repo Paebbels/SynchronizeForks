@@ -1,23 +1,28 @@
 # Auto Synchronize forked repositories
 
-* ghdl
-  * GHDL
-* OSVVM
-  * OSVVM
-  * OSVVM-Libraries
-  * OSVVM-Scripts
-  * OSVVM-Common
-  * OSVVM-AXI4
-  * OSVVM-UART
-  * OSVVM-DPRAM
-  * OSVVM-CoSim
-  * OSVVM-Ethernet
-  * OSVVM-Documentation
-* *others*
-  * progit2
-  * msys2/MINGW-packages=MINGW-packages:master
-  * antonblanchard/microwatt=microwatt:master
-  * BR1py/itertree=itertree:main
+This repository automates the synchronization of forked repositories for the GitHub namespace `Paebbels`. The
+[GitHub Action pipeline](https://github.com/Paebbels/SynchronizeForks/blob/main/.github/workflows/Synchronize.yml) can
+be copied to another repository and configuration files (`*.repos`) can be adjusted to achieve the same functionality
+for other namespaces.
+
+This code is licensed under [MIT License](LICENSE.md).
+
+
+## Example Pipeline Log
+
+![GitHub Action log](Pipeline.png)
+
+## Steps to Setup
+
+1. Create a repository like `SynchronizeForks` in your namespace.
+2. Copy these files:
+   * [README.md](https://github.com/Paebbels/SynchronizeForks/blob/main/README.md)
+   * [LICENSE.md](https://github.com/Paebbels/SynchronizeForks/blob/main/LICENSE.md)
+   * [.github/workflows/Synchronize.yml](https://github.com/Paebbels/SynchronizeForks/blob/main/.github/workflows/Synchronize.yml)
+   * [.ALL.repos](https://github.com/Paebbels/SynchronizeForks/blob/main/.ALL.repos)
+3. Configure `*.repos` files.
+4. Push the commit and check the Action for success.
+
 
 ## Configuration File Formats
 
@@ -47,6 +52,29 @@ OSVVM/OSVVM=OSVVM:main,dev
 OSVVM/AXI4=OSVVM-AXI4:main,dev
 #OSVVM/AvalonST=OSVVM-AvalonST:main
 ```
+
+
+## Synchronize repositories
+
+* ghdl
+  * GHDL
+* OSVVM
+  * OSVVM
+  * OSVVM-Libraries
+  * OSVVM-Scripts
+  * OSVVM-Common
+  * OSVVM-AXI4
+  * OSVVM-UART
+  * OSVVM-DPRAM
+  * OSVVM-CoSim
+  * OSVVM-Ethernet
+  * OSVVM-Documentation
+* *others*
+  * progit2
+  * msys2/MINGW-packages
+  * antonblanchard/microwatt
+  * BR1py/itertree
+
 
 ## GitHub CLI Documentation
 
