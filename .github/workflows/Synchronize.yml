@@ -28,6 +28,7 @@ jobs:
           export GH_TOKEN=${{ secrets.GH_TOKEN }}
           
           targetOrganisation=Paebbels
+          errorCount=0
           
           while IFS=$'\r\n' read -r organisation; do
             printf "🏭 %s\n" "${organisation}"
@@ -49,7 +50,12 @@ jobs:
                   printf "    ❌ %s\n" "${syncCommand}"
                   printf "%s\n" "$(sed 's/^/    ↪ /g' <<< "${messages}")"
                   printf "::error title=%s::%s\n" "Synchronize ${targetOrganisation}/${repo}" "${messages}"
+                  errorCount=$((errorCount + 1))
                 fi
               done
             done < <(cat "${organisation}.repos")
           done < <(cat ".ALL.repos")
+          
+          if [[ $errorCount -gt 0 ]]; then
+            exit 1
+          fi
