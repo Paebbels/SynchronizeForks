@@ -23,24 +23,35 @@ jobs:
       - name: 🔄 Synchronize Repositories
         run: |
           set +e
-          
+
           printf "See: %s\n" "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork"
           export GH_TOKEN=${{ secrets.GH_TOKEN }}
-          
+
           targetOrganisation=Paebbels
           errorCount=0
-          
+
           while IFS=$'\r\n' read -r organisation; do
-            printf "🏭 %s\n" "${organisation}"
-          
+            if [[ "${organisation:0:1}" == "#" ]]; then
+              printf "🚫 %s\n" "${organisation}"
+              continue
+            else
+              printf "🏭 %s\n" "${organisation}"
+            fi
+
             while IFS=$'\r\n' read -r line; do
               parent=${line%=*}
               fork=${line#*=}
               repo=${fork%:*}
               branches=${fork#*:}
               branches=(${branches//,/ })
-          
-              printf "  📂 %s ⇒ %s\n" "${parent}" "${repo}"
+              
+              if [[ "${line:0:1}" == "#" ]]; then
+                printf "  🚫 %s ⇒ %s\n" "${parent}" "${repo}"
+                continue
+              else
+                printf "  📂 %s ⇒ %s\n" "${parent}" "${repo}"
+              fi
+
               for branch in "${branches[@]}"; do
                 syncCommand="gh repo sync ${targetOrganisation}/${repo} -b ${branch}"
                 messages=$($syncCommand 2>&1)
@@ -55,7 +66,7 @@ jobs:
               done
             done < <(cat "${organisation}.repos")
           done < <(cat ".ALL.repos")
-          
+
           if [[ $errorCount -gt 0 ]]; then
             exit 1
           fi
