@@ -25,8 +25,8 @@ name: Synchronize forked repositories
 on:
   push:
   schedule:
-# Every day at 06:21 - rerun pipeline to check for updates on forked repositories
-    - cron: '21 6 * * *'
+# Every day at 05:50 (UTC+1) - rerun pipeline to check for updates on forked repositories
+    - cron: '50 4 * * *'
 
 jobs:
   Synchronize:
